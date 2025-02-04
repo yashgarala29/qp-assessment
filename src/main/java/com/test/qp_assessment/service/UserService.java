@@ -46,15 +46,24 @@ public class UserService {
 
     public ResponseEntity<String> placeOrder(PlaceOrder placeOrder) {
         System.out.println("placeOrder = " + placeOrder);
+        if(placeOrder.getBookItems().isEmpty()){
+            return ResponseEntity.badRequest().body("No items to order");
+        }
         List<String> validations=new ArrayList<>();
         List<BookItem> bookItems = placeOrder.getBookItems();
         for(BookItem bookItem : bookItems){
+            if(bookItem.getQuantity() == null || bookItem.getQuantity()<=0 || bookItem.getProductId() == null || bookItem.getProductId() <= 0){
+                validations.add("Invalid input");
+                continue;
+            }
             Grocery grocery = groceryRepo.findById(bookItem.getProductId()).orElse(null);
             if(grocery == null){
                 validations.add("Product with id "+bookItem.getProductId()+" not found");
+                continue;
             }
             if(grocery.getQuantity() < bookItem.getQuantity()){
                 validations.add("Product with name "+grocery.getItemName() +" has only "+grocery.getQuantity()+" quantity");
+                continue;
             }
         }
         if(!validations.isEmpty()){
