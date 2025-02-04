@@ -15,6 +15,9 @@ public class AdminService {
     @Autowired
     private GroceryRepo groceryRepo;
     public ResponseEntity<String> addProduct(ProductDetails productDetails) {
+            if(productDetails.getPrice()==null || productDetails.getQuantity()==null || productDetails.getItemName()==null){
+                return new ResponseEntity<>("Invalid input", HttpStatus.BAD_REQUEST);
+            }
             Grocery grocery=new Grocery();
             grocery.setPrice(productDetails.getPrice());
             grocery.setQuantity(productDetails.getQuantity());
@@ -37,11 +40,18 @@ public class AdminService {
     }
 
     public ResponseEntity<String> deleteProduct(Long productId) {
+        Grocery grocery=groceryRepo.findById(productId).orElse(null);
+        if(grocery==null){
+            return new ResponseEntity<>("Product not found",HttpStatus.NOT_FOUND);
+        }
         groceryRepo.deleteById(productId);
         return new ResponseEntity<>("Product deleted successfully",HttpStatus.OK);
     }
 
     public ResponseEntity<String> updateProduct(ProductDetails productDetails) {
+        if(productDetails.getId()==null){
+            return new ResponseEntity<>("Invalid input",HttpStatus.BAD_REQUEST);
+        }
         Grocery grocery=groceryRepo.findById(productDetails.getId()).orElse(null);
         if(grocery==null){
             return new ResponseEntity<>("Product not found",HttpStatus.NOT_FOUND);
@@ -60,6 +70,9 @@ public class AdminService {
     }
 
     public ResponseEntity<String> updateProductQuantity(ProductDetails productDetails) {
+        if(productDetails.getId()==null || productDetails.getQuantity()==null){
+            return new ResponseEntity<>("Invalid input",HttpStatus.BAD_REQUEST);
+        }
         Grocery grocery=groceryRepo.findById(productDetails.getId()).orElse(null);
         if(grocery==null){
             return new ResponseEntity<>("Product not found",HttpStatus.NOT_FOUND);

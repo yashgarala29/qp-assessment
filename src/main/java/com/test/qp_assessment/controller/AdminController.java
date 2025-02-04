@@ -8,6 +8,7 @@ import com.test.qp_assessment.service.AuthenticatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,14 +24,14 @@ public class AdminController {
     AuthenticatService authenticatService;
 
     @PostMapping("/addProduct")
-    public ResponseEntity<String> addProduct(@RequestBody ProductDetails productDetails) {
+    public ResponseEntity<String> addProduct(  @RequestBody ProductDetails productDetails) {
         if(!authenticatService.authenticateUser(productDetails.getUserId(), Role.ADMIN)){
             return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         }
         return adminService.addProduct(productDetails);
     }
     @GetMapping("/getAllProducts")
-    public ResponseEntity<List<ProductDetails>> getAllProducts(@RequestBody UserDetails userDetails) {
+    public ResponseEntity<List<ProductDetails>> getAllProducts(  @RequestBody UserDetails userDetails) {
 
         if(!authenticatService.authenticateUser(userDetails.getUserId(), Role.ADMIN)){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -46,7 +47,7 @@ public class AdminController {
         return adminService.deleteProduct(productId);
     }
     @PatchMapping("/updateProduct")
-    public ResponseEntity<String> updateProduct(@RequestBody ProductDetails productDetails) {
+    public ResponseEntity<String> updateProduct( @Validated @RequestBody ProductDetails productDetails) {
         if(!authenticatService.authenticateUser(productDetails.getUserId(), Role.ADMIN)){
             return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         }
