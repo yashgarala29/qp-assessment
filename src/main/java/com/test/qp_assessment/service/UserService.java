@@ -45,6 +45,7 @@ public class UserService {
     }
 
     public ResponseEntity<String> placeOrder(PlaceOrder placeOrder) {
+        System.out.println("placeOrder = " + placeOrder);
         List<String> validations=new ArrayList<>();
         List<BookItem> bookItems = placeOrder.getBookItems();
         for(BookItem bookItem : bookItems){
@@ -65,6 +66,7 @@ public class UserService {
         }
         List<OrderItem> orderItems=new ArrayList<>();
 
+        Order order=new Order();
         for(BookItem bookItem : bookItems){
             Grocery grocery = groceryRepo.findById(bookItem.getProductId()).orElse(null);
             grocery.setQuantity( grocery.getQuantity()-bookItem.getQuantity());
@@ -72,14 +74,15 @@ public class UserService {
             OrderItem orderItem=new OrderItem();
             orderItem.setGrocery(grocery);
             orderItem.setQuantity(bookItem.getQuantity());
+            orderItem.setOrder(order);
             orderItems.add(orderItem);
 
         }
-        Order order=new Order();
         order.setOrderItems(orderItems);
         order.setUser(currentUser);
         order.setOrderDate(LocalDateTime.now());
         orderRepo.save(order);
+
         return ResponseEntity.ok("Order placed successfully");
 
     }
