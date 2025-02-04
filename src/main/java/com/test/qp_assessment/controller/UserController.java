@@ -3,6 +3,7 @@ package com.test.qp_assessment.controller;
 import com.test.qp_assessment.dto.BookItem;
 import com.test.qp_assessment.dto.PlaceOrder;
 import com.test.qp_assessment.dto.ProductDetails;
+import com.test.qp_assessment.dto.UserDetails;
 import com.test.qp_assessment.model.Role;
 import com.test.qp_assessment.service.AuthenticatService;
 import com.test.qp_assessment.service.UserService;
@@ -23,7 +24,10 @@ public class UserController {
 
 
     @GetMapping("/allAvailableProducts")
-    public ResponseEntity<List<ProductDetails>> allAvailableProducts() {
+    public ResponseEntity<List<ProductDetails>> allAvailableProducts(@RequestBody UserDetails userDetails) {
+        if(!authenticatService.authenticateUser(userDetails.getUserId(), Role.USER)){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return userService.allAvailableProducts();
     }
     @PostMapping("/placeOrder")
